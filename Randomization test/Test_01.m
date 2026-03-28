@@ -753,8 +753,8 @@ end
 %}
 %%
 % For Female
-Weight_pool = Male_data_5(:,2); % Raw data of Weight in Kg;
-Height_pool = Male_data_5(:,1)/100; % Raw data of Height in m;
+Weight_pool = Female_data_11(:,2); % Raw data of Weight in Kg;
+Height_pool = Female_data_11(:,1)/100; % Raw data of Height in m;
 [M N] = size(Height_pool);
 
 % Randomly match the weight with the height
@@ -787,7 +787,7 @@ end
 figure;
 subplot(1,2,1)
 hold on;
-title('Aged 5')
+title('Aged 11')
 xlabel('Raw Weight (Kg)');
 ylabel('Raw Height (m)');
 ylim([1 1.8]);
@@ -796,10 +796,13 @@ set(gca,'linewidth',My_LineWidth,'TickDir','out','FontName',My_FontName,'FontSiz
 
 H1 = plot(Weight_pool,Height_pool,'o','linewidth',My_LineWidth_1,'Color',[0 0 0],'MarkerSize',5, ...
     'MarkerFaceColor',My_Colors_3(2,:));
+Corr_01 = My_Corr(Weight_pool,Weight_pool.*Height_pool); % The correlation coefficient between Weight and Weight * Height
+My_str_01 = ['r = ' num2str(round(Corr_01,4))];
+text(70,1.1,My_str_01)
 
 subplot(1,2,2)
 hold on;
-title('Aged 5')
+title('Aged 11')
 xlabel('Raw Weight (Kg)');
 ylabel('Random Height (m)');
 ylim([1 1.8]);
@@ -808,12 +811,15 @@ set(gca,'linewidth',My_LineWidth,'TickDir','out','FontName',My_FontName,'FontSiz
 
 H1 = plot(Weight_pool,Height_random,'o','linewidth',My_LineWidth_1,'Color',[0 0 0],'MarkerSize',5, ...
     'MarkerFaceColor',My_Colors_3(2,:));
+Corr_02 = My_Corr(Weight_pool,Weight_pool.*Height_random); % The correlation coefficient between Weight and Weight * Height
+My_str_02 = ['r = ' num2str(round(Corr_02,4))];
+text(70,1.1,My_str_02)
 
 %
 FF = figure;
 subplot(1,2,1) % Raw sWHI
 hold on;
-title('Aged 5')
+title('Aged 11')
 xlabel('Raw sWHI');
 ylabel('Normalized count')
 xlim([0.85 1.15]);
@@ -822,11 +828,11 @@ set(gca,'linewidth',My_LineWidth,'TickDir','out','FontName',My_FontName,'FontSiz
 
 set(gca,'XTick',[0.85 0.9 0.95 1 1.05 1.1 1.15],'XTicklabel',{'0.85','0.9','0.95','1','1.05','1.1','1.15'});
 
-nbins = 200;
+nbins = 400;
 figure;
 HH_Raw = histogram(sWHI_raw,nbins);
 figure;
-nbins = 150;
+nbins = 400;
 HH_Random = histogram(sWHI_random,nbins);
 
 figure(FF)
@@ -861,9 +867,13 @@ XX = [Prctile_Female(3) Prctile_Female(3)];
 YY = [0 1.2]; 
 HH2 = plot(XX,YY,'--','LineWidth',My_LineWidth-0.5,'Color',My_Colors_4_1(1,:)); % 95th
 
+Std_01 = var(sWHI_raw); % standard deviation for raw dataset
+My_str_01 = ['Std. = ' num2str(round(Std_01,6))];
+text(0.9,1.1,My_str_01)
+
 subplot(1,2,2) % Random sWHI
 hold on;
-title('Aged 5')
+title('Aged 11')
 xlabel('Random sWHI');
 ylabel('Normalized count')
 xlim([0.85 1.15]);
@@ -872,11 +882,11 @@ set(gca,'linewidth',My_LineWidth,'TickDir','out','FontName',My_FontName,'FontSiz
 
 set(gca,'XTick',[0.85 0.9 0.95 1 1.05 1.1 1.15],'XTicklabel',{'0.85','0.9','0.95','1','1.05','1.1','1.15'});
 
-nbins = 80;
+nbins = 400;
 figure;
 HH_Raw = histogram(sWHI_raw,nbins);
 figure;
-nbins = 80;
+nbins = 400;
 HH_Random = histogram(sWHI_random,nbins);
 
 figure(FF)
@@ -911,3 +921,6 @@ XX = [Prctile_Female(3) Prctile_Female(3)];
 YY = [0 1.2]; 
 HH2 = plot(XX,YY,'--','LineWidth',My_LineWidth-0.5,'Color',My_Colors_4_1(1,:)); % 95th
 
+Std_02 = var(sWHI_random); % standard deviation for random dataset
+My_str_02 = ['Std. = ' num2str(round(Std_02,6))];
+text(0.9,1.1,My_str_02)

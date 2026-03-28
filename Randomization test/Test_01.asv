@@ -14,7 +14,7 @@ Band_Width = 1;
 %% Colors
 load('My_Colors.mat')
 %% Load and segment the data by age and gender
-%{
+%
 %% Total_ALL
 Female_data = xlsread('./Raw_data/Total_ALL.xlsx','Female'); % No.	Age	Height(cm)	Weight(Kg)
 Male_data = xlsread('./Raw_data/Total_ALL.xlsx','Male'); % No. Age	Height(cm)	Weight(Kg)
@@ -760,15 +760,19 @@ Height_pool = Female_data_11(:,1)/100; % Raw data of Height in m;
 % Randomly match the weight with the height
 Height_random = zeros(M,1);
 for i = 1:M
-    Height_random(i,1) = Height_pool(round(M*rand()),1);
+    No = round(M*rand());
+    if No ==0 % Make sure that the randomly generated number is not zero. This is a technical correction in the program.
+        No = 1;
+    end
+    Height_random(i,1) = Height_pool(No,1);
 end
 
 X_data = Height_pool; % Height (m)
 Y_data = Weight_pool; % Weight (Kg)
 Z_data= X_data.*Y_data; % Height^c*Weight
 PP = polyfit(Z_data,Y_data,1); % linear fitting
-Coefficient_a = [Coefficient_a_Female_1_Jilin_China PP(2)];
-Coefficient_b = [Coefficient_b_Female_1_Jilin_China PP(1)];
+Coefficient_a = PP(2);
+Coefficient_b = PP(1);
 
 % sWHI = a/Weight + b*Height
 sWHI_raw = zeros(M,1);
@@ -792,6 +796,9 @@ set(gca,'linewidth',My_LineWidth,'TickDir','out','FontName',My_FontName,'FontSiz
 
 H1 = plot(Weight_pool,Height_pool,'o','linewidth',My_LineWidth_1,'Color',[0 0 0],'MarkerSize',5, ...
     'MarkerFaceColor',My_Colors_3(2,:));
+Corr_01 = My_Corr(Weight_pool,Weight_pool.*Height_pool); % The correlation coefficient between Weight and Weight * Height
+My_str_01 = num2str(round(Corr_01,4));
+text(70,1.1,My_str_01)
 
 subplot(1,2,2)
 hold on;
@@ -804,9 +811,12 @@ set(gca,'linewidth',My_LineWidth,'TickDir','out','FontName',My_FontName,'FontSiz
 
 H1 = plot(Weight_pool,Height_random,'o','linewidth',My_LineWidth_1,'Color',[0 0 0],'MarkerSize',5, ...
     'MarkerFaceColor',My_Colors_3(2,:));
+Corr_02 = My_Corr(Weight_pool,Weight_pool.*Height_random); % The correlation coefficient between Weight and Weight * Height
+My_str_02 = [r = num2str(round(Corr_02,4));
+text(70,1.1,My_str_02)
 
 %
-figure;
+FF = figure;
 subplot(1,2,1) % Raw sWHI
 hold on;
 title('Aged 11')
@@ -820,10 +830,10 @@ set(gca,'XTick',[0.85 0.9 0.95 1 1.05 1.1 1.15],'XTicklabel',{'0.85','0.9','0.95
 
 nbins = 200;
 figure;
-HH_Raw = histogram(sWHI_Female_All__,nbins);
+HH_Raw = histogram(sWHI_raw,nbins);
 figure;
-nbins = 150;
-HH_Male = histogram(sWHI_Male_All__,nbins);
+nbins = 200;
+HH_Random = histogram(sWHI_random,nbins);
 
 figure(FF)
 xx = HH_Raw.BinEdges;
@@ -835,7 +845,7 @@ for i = 1:N-1
     H = fill(X_Fill,Y_Fill,My_Colors_4_1(1,:));
     set(H,'edgealpha',0.1,'facealpha',My_Alpha);
 end
-My_P = prctile(sWHI_Female_All__,My_Percentile);
+My_P = prctile(sWHI_raw,My_Percentile);
 [M N] = size(HH_Raw.BinEdges);
 x_data = [];
 y_data = HH_Raw.Values;
@@ -849,7 +859,7 @@ YY = fitobject(XX);
 H1 = plot(XX,YY/max(YY),'LineWidth',My_LineWidth,'Color',My_Colors_4_1(1,:));
 
 % 5th and 95th
-Prctile_Female = prctile(sWHI_Female_All__,My_Percentile);
+Prctile_Female = prctile(sWHI_raw,My_Percentile);
 XX = [Prctile_Female(1) Prctile_Female(1)]; 
 YY = [0 1.2]; 
 HH1 = plot(XX,YY,':','LineWidth',My_LineWidth-0.5,'Color',My_Colors_4_1(1,:)); % 5th
@@ -857,3 +867,60 @@ XX = [Prctile_Female(3) Prctile_Female(3)];
 YY = [0 1.2]; 
 HH2 = plot(XX,YY,'--','LineWidth',My_LineWidth-0.5,'Color',My_Colors_4_1(1,:)); % 95th
 
+Std_01 = var(sWHI_raw); % standard deviation for raw dataset
+My_str_01 = ['Std. = ' num2str(round(Std_01,6))];
+text(0.9,1.1,My_str_01)
+
+subplot(1,2,2) % Random sWHI
+hold on;
+title('Aged 11')
+xlabel('Random sWHI');
+ylabel('Normalized count')
+xlim([0.85 1.15]);
+ylim([0 1.2]);
+set(gca,'linewidth',My_LineWidth,'TickDir','out','FontName',My_FontName,'FontSize',My_fontSize)
+
+set(gca,'XTick',[0.85 0.9 0.95 1 1.05 1.1 1.15],'XTicklabel',{'0.85','0.9','0.95','1','1.05','1.1','1.15'});
+
+nbins = 200;
+figure;
+HH_Raw = histogram(sWHI_raw,nbins);
+figure;
+nbins = 200;
+HH_Random = histogram(sWHI_random,nbins);
+
+figure(FF)
+xx = HH_Random.BinEdges;
+yy = HH_Random.Values/max(HH_Random.Values);
+[M N] = size(HH_Random.BinEdges);
+for i = 1:N-1
+    X_Fill = [xx(i) xx(i+1) xx(i+1) xx(i)];
+    Y_Fill = [0 0 yy(i) yy(i)];
+    H = fill(X_Fill,Y_Fill,My_Colors_4_1(1,:));
+    set(H,'edgealpha',0.1,'facealpha',My_Alpha);
+end
+My_P = prctile(sWHI_random,My_Percentile);
+[M N] = size(HH_Random.BinEdges);
+x_data = [];
+y_data = HH_Random.Values;
+for i = 1:N-1
+    x_data = [x_data (xx(i)+xx(i+1))/2];
+end
+[fitobject,gof] = fit(x_data',y_data','smooth');
+XX = min(xx):0.001:max(xx);
+YY = fitobject(XX);
+%YY = YY/(max(yy));
+H1 = plot(XX,YY/max(YY),'LineWidth',My_LineWidth,'Color',My_Colors_4_1(1,:));
+
+% 5th and 95th
+Prctile_Female = prctile(sWHI_random,My_Percentile);
+XX = [Prctile_Female(1) Prctile_Female(1)]; 
+YY = [0 1.2]; 
+HH1 = plot(XX,YY,':','LineWidth',My_LineWidth-0.5,'Color',My_Colors_4_1(1,:)); % 5th
+XX = [Prctile_Female(3) Prctile_Female(3)]; 
+YY = [0 1.2]; 
+HH2 = plot(XX,YY,'--','LineWidth',My_LineWidth-0.5,'Color',My_Colors_4_1(1,:)); % 95th
+
+Std_02 = var(sWHI_random); % standard deviation for random dataset
+My_str_02 = ['Std. = ' num2str(round(Std_02,6))];
+text(0.9,1.1,My_str_02)

@@ -14,7 +14,7 @@ Band_Width = 1;
 %% Colors
 load('My_Colors.mat')
 %% Load and segment the data by age and gender
-%{
+%
 %% Total_ALL
 Female_data = xlsread('./Raw_data/Total_ALL.xlsx','Female'); % No.	Age	Height(cm)	Weight(Kg)
 Male_data = xlsread('./Raw_data/Total_ALL.xlsx','Male'); % No. Age	Height(cm)	Weight(Kg)
@@ -753,8 +753,8 @@ end
 %}
 %%
 % For Female
-Weight_pool = Male_data_5(:,2); % Raw data of Weight in Kg;
-Height_pool = Male_data_5(:,1)/100; % Raw data of Height in m;
+Weight_pool = Female_data_11(:,2); % Raw data of Weight in Kg;
+Height_pool = Female_data_11(:,1)/100; % Raw data of Height in m;
 % Linear fitting of the hyperbolic model: Weight = a + b*Weight*Height
 X_data = Height_pool; % Height (m)
 Y_data = Weight_pool; % Weight (Kg)
@@ -802,5 +802,7 @@ var(sWHI_raw) % The real variance of sWHI of raw data
 var(Var_random) % The variance of the variance of sWHI for 1000 random data sets
 mean(Var_random) % The mean of the variance of sWHI for 1000 random data sets
 
+var(Corr_random)
 mean(Corr_random) % The correlation coefficient based on the random data set, between weight and weight * height
+
 Corr_Raw % The correlation coefficient based on the raw data set, between weight and weight * height
