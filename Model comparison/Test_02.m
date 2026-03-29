@@ -3,7 +3,7 @@
 % In the model, we use weight to predict height.
 % The Allometric model: Height = m*Weight^k; ln(Height) = ln(m) + k*ln(Weight)
 % The Hyperbolic model: Weight = a + b*Weight*Height; Height = (Weight-a)/(b*Weight);
-%{
+%
 %% Parameter information for drawing
 My_mark_type = '.';
 My_LineWidth = 2;
