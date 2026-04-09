@@ -38,5 +38,5 @@ Save_data_Female = [Save_data_Female;Female_data(:,2:4)];
 Save_data = [Save_data_Female;Save_data_Male];
 xlswrite('Asia_ALL.xlsx',Save_data_Female,'Female','B2');
 xlswrite('Asia_ALL.xlsx',Save_data_Male,'Male','B2');
-%xlswrite('Asia_ALL.xlsx',Save_data,'ALL','C2');
+xlswrite('Asia_ALL.xlsx',Save_data,'ALL','C2');
 
